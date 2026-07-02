@@ -1,8 +1,8 @@
 BEGIN:VCARD
 VERSION:3.0
 FN:D.N. Piper
-ND.N.:;TessellNation;;;
+N:Piper;D.N.;;;
+ORG:TessellNation
 EMAIL:tessellnationstation@gmail.com
-TEL:+4407941674293
 URL:https://tessellnation.co.uk
 END:VCARD
