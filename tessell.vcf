@@ -1,8 +1,10 @@
 BEGIN:VCARD
 VERSION:3.0
-FN:D.N. Piper
-N:Piper;D.N.;;;
+FN:TessellNation
+N:TessellNation;;;;
 ORG:TessellNation
+TITLE:D.N. Piper
+X-ABShowAs:COMPANY
 EMAIL:tessellnationstation@gmail.com
 URL:https://tessellnation.co.uk
 PHOTO;ENCODING=b;TYPE=PNG:iVBORw0KGgoAAAANSUhEUgAAAgAAAAIACAYAAAD0eNT6AAAAC
