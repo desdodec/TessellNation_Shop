@@ -2,7 +2,7 @@ import { acceptInvite, getUser, handleAuthCallback, login, logout } from '@netli
 import JSZip from 'jszip';
 
 const $ = (selector) => document.querySelector(selector);
-const state = { items: [], filtered: [], selected: new Set(), previewItem: null, inviteToken: null };
+const state = { items: [], filtered: [], selected: new Set(), previewItem: null, previewUrl: null, inviteToken: null };
 const authPanel = $('#auth-panel');
 const library = $('#library');
 const account = $('#account');
@@ -97,12 +97,21 @@ async function downloadItem(item) {
   saveBlob(await response.blob(), item.filename);
 }
 
-function openPreview(item) {
+async function openPreview(item) {
   state.previewItem = item;
   $('#preview-title').textContent = item.title;
-  $('#preview-stage').innerHTML = `<iframe title="Preview of ${escapeHtml(item.title)}" src="/.netlify/functions/document?key=${encodeURIComponent(item.key)}"></iframe>`;
+  $('#preview-stage').innerHTML = '<div class="preview-loading">Loading secure preview…</div>';
   $('#preview-select').textContent = state.selected.has(item.key) ? 'Remove from selection' : 'Add to selection';
   $('#preview-dialog').showModal();
+  try {
+    const response = await authenticatedFetch(`/.netlify/functions/document?key=${encodeURIComponent(item.key)}`);
+    if (!response.ok) throw new Error(`Could not preview ${item.title}.`);
+    state.previewUrl = URL.createObjectURL(await response.blob());
+    $('#preview-stage').innerHTML = `<iframe title="Preview of ${escapeHtml(item.title)}" src="${state.previewUrl}"></iframe>`;
+  } catch (error) {
+    $('#preview-dialog').close();
+    setNotice(error.message);
+  }
 }
 
 async function downloadZip() {
@@ -169,7 +178,7 @@ $('#letter-filter').addEventListener('change', filterItems); $('#sort-order').ad
 grid.addEventListener('change', (event) => { if (event.target.matches('.card-check')) toggleSelection(itemForElement(event.target), event.target.checked); });
 grid.addEventListener('click', async (event) => {
   const item = itemForElement(event.target); if (!item) return;
-  if (event.target.dataset.action === 'preview') openPreview(item);
+  if (event.target.dataset.action === 'preview') await openPreview(item);
   if (event.target.dataset.action === 'download') try { await downloadItem(item); } catch (error) { setNotice(error.message); }
 });
 $('#select-visible').addEventListener('click', () => {
@@ -178,7 +187,12 @@ $('#select-visible').addEventListener('click', () => {
 });
 $('#clear-selection').addEventListener('click', () => { state.selected.clear(); renderItems(); updateTray(); clearNotice(); });
 $('#download-zip').addEventListener('click', downloadZip); $('#close-preview').addEventListener('click', () => $('#preview-dialog').close());
-$('#preview-dialog').addEventListener('close', () => { $('#preview-stage').innerHTML = ''; state.previewItem = null; });
+$('#preview-dialog').addEventListener('close', () => {
+  $('#preview-stage').innerHTML = '';
+  if (state.previewUrl) URL.revokeObjectURL(state.previewUrl);
+  state.previewUrl = null;
+  state.previewItem = null;
+});
 $('#preview-select').addEventListener('click', () => { if (state.previewItem) { toggleSelection(state.previewItem); $('#preview-select').textContent = state.selected.has(state.previewItem.key) ? 'Remove from selection' : 'Add to selection'; } });
 $('#preview-download').addEventListener('click', async () => { if (state.previewItem) await downloadItem(state.previewItem); });
 
