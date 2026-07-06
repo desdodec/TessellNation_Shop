@@ -82,6 +82,13 @@
         <a href="/library/" class="btn btn-secondary">Client Library</a>
     </div>
 
+<script>
+    // Netlify Identity sends invitation and recovery callbacks to the site URL.
+    // Preserve the token while forwarding those callbacks to the client library.
+    if (/^#(?:invite_token|confirmation_token|recovery_token|access_token)=/.test(window.location.hash)) {
+        window.location.replace('/library/' + window.location.hash);
+    }
+</script>
 </body>
 </html>
 
