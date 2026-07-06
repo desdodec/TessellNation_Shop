@@ -128,15 +128,27 @@ async function showLoggedIn(user) {
 }
 async function showLoggedOut(text = '') {
   authPanel.hidden = false; library.hidden = true; account.hidden = true; account.style.display = '';
+  state.inviteToken = null;
+  $('#email-label').hidden = false;
+  $('#email').required = true;
+  $('#password').autocomplete = 'current-password';
+  $('#login-button').textContent = 'Sign in';
   $('#login-message').textContent = text;
 }
 
 $('#login-form').addEventListener('submit', async (event) => {
   event.preventDefault(); const button = event.submitter; button.disabled = true; $('#login-message').textContent = 'Signing in…';
   try {
-    const user = state.inviteToken
-      ? await acceptInvite(state.inviteToken, $('#password').value)
-      : await login($('#email').value.trim(), $('#password').value);
+    let user;
+    if (state.inviteToken) {
+      const password = $('#password').value;
+      const invitedUser = await acceptInvite(state.inviteToken, password);
+      // acceptInvite persists the GoTrue session, but login also synchronises
+      // Netlify's nf_jwt cookie used by protected serverless functions.
+      user = invitedUser.email ? await login(invitedUser.email, password) : invitedUser;
+    } else {
+      user = await login($('#email').value.trim(), $('#password').value);
+    }
     state.inviteToken = null;
     await showLoggedIn(user);
   }
