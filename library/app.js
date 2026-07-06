@@ -34,14 +34,18 @@ async function loadCatalogue() {
 }
 
 function filterItems() {
-  const query = $('#search').value.trim().toLocaleLowerCase('en-GB');
+  const query = normaliseSearch($('#search').value);
   const letter = $('#letter-filter').value;
   const direction = $('#sort-order').value;
   state.filtered = state.items
-    .filter((item) => !query || `${item.title} ${item.filename}`.toLocaleLowerCase('en-GB').includes(query))
+    .filter((item) => !query || normaliseSearch(item.title).includes(query))
     .filter((item) => !letter || item.title.toUpperCase().startsWith(letter))
     .sort((a, b) => direction === 'az' ? a.title.localeCompare(b.title) : b.title.localeCompare(a.title));
   renderItems();
+}
+
+function normaliseSearch(value) {
+  return String(value || '').trim().toLocaleLowerCase('en-GB').normalize('NFKD').replace(/[\u0300-\u036f]/g, '');
 }
 
 function renderItems() {
@@ -156,7 +160,12 @@ $('#login-form').addEventListener('submit', async (event) => {
   finally { button.disabled = false; }
 });
 $('#logout-button').addEventListener('click', async () => { await logout(); await showLoggedOut('You have signed out.'); });
-$('#search').addEventListener('input', filterItems); $('#letter-filter').addEventListener('change', filterItems); $('#sort-order').addEventListener('change', filterItems);
+$('#search').addEventListener('input', () => {
+  // Free-text search is global and should not be silently constrained by a previous letter choice.
+  $('#letter-filter').value = '';
+  filterItems();
+});
+$('#letter-filter').addEventListener('change', filterItems); $('#sort-order').addEventListener('change', filterItems);
 grid.addEventListener('change', (event) => { if (event.target.matches('.card-check')) toggleSelection(itemForElement(event.target), event.target.checked); });
 grid.addEventListener('click', async (event) => {
   const item = itemForElement(event.target); if (!item) return;
