@@ -25,10 +25,10 @@
         <p>Sign in with the email address that received your invitation.</p>
       </div>
       <form id="login-form" class="login-form">
-        <label>Email address<input id="email" name="email" type="email" autocomplete="email" required></label>
-        <label>Password<input id="password" name="password" type="password" autocomplete="current-password" required></label>
+        <label id="email-label">Email address<input id="email" name="email" type="email" autocomplete="email" required></label>
+        <label>Password<input id="password" name="password" type="password" autocomplete="current-password" minlength="10" required></label>
         <p class="form-message" id="login-message" role="status"></p>
-        <button class="primary-button" type="submit">Sign in</button>
+        <button class="primary-button" id="login-button" type="submit">Sign in</button>
       </form>
     </section>
 

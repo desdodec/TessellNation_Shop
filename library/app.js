@@ -1,8 +1,8 @@
-import { getUser, handleAuthCallback, login, logout } from '@netlify/identity';
+import { acceptInvite, getUser, handleAuthCallback, login, logout } from '@netlify/identity';
 import JSZip from 'jszip';
 
 const $ = (selector) => document.querySelector(selector);
-const state = { items: [], filtered: [], selected: new Set(), previewItem: null };
+const state = { items: [], filtered: [], selected: new Set(), previewItem: null, inviteToken: null };
 const authPanel = $('#auth-panel');
 const library = $('#library');
 const account = $('#account');
@@ -133,7 +133,13 @@ async function showLoggedOut(text = '') {
 
 $('#login-form').addEventListener('submit', async (event) => {
   event.preventDefault(); const button = event.submitter; button.disabled = true; $('#login-message').textContent = 'Signing in…';
-  try { await showLoggedIn(await login($('#email').value.trim(), $('#password').value)); }
+  try {
+    const user = state.inviteToken
+      ? await acceptInvite(state.inviteToken, $('#password').value)
+      : await login($('#email').value.trim(), $('#password').value);
+    state.inviteToken = null;
+    await showLoggedIn(user);
+  }
   catch (error) { $('#login-message').textContent = error?.message || 'Sign-in failed. Check your email and password.'; }
   finally { button.disabled = false; }
 });
@@ -156,7 +162,18 @@ $('#preview-select').addEventListener('click', () => { if (state.previewItem) { 
 $('#preview-download').addEventListener('click', async () => { if (state.previewItem) await downloadItem(state.previewItem); });
 
 async function initialise() {
-  try { await handleAuthCallback(); } catch (error) { $('#login-message').textContent = error.message; }
+  try {
+    const callback = await handleAuthCallback();
+    if (callback?.type === 'invite' && callback.token) {
+      state.inviteToken = callback.token;
+      $('#email-label').hidden = true;
+      $('#email').required = false;
+      $('#password').autocomplete = 'new-password';
+      $('#login-button').textContent = 'Create account';
+      $('#login-message').textContent = 'Choose a password of at least 10 characters to accept your invitation.';
+      return;
+    }
+  } catch (error) { $('#login-message').textContent = error.message; }
   const user = await getUser();
   if (user) try { await showLoggedIn(user); } catch (error) { setNotice(error.message); }
   else await showLoggedOut();
