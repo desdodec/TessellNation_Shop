@@ -1,0 +1,21 @@
+{
+  "name": "tessellnation-shop",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "esbuild library/app.js --bundle --minify --sourcemap --outfile=library/app.bundle.js",
+    "dev": "netlify dev",
+    "upload:library": "node scripts/upload-library.mjs"
+  },
+  "dependencies": {
+    "@netlify/blobs": "^10.0.0",
+    "@netlify/identity": "^1.0.0",
+    "jszip": "^3.10.1"
+  },
+  "devDependencies": {
+    "@netlify/functions": "^5.0.0",
+    "esbuild": "^0.25.0",
+    "netlify-cli": "^23.0.0"
+  }
+}

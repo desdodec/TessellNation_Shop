@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Client Library | TessellNation</title>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/library/styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="/" aria-label="TessellNation home"><img src="/tessellNation_logo_new.svg" alt="TessellNation"></a>
+    <div class="account" id="account" hidden><span id="user-email"></span><button class="text-button" id="logout-button" type="button">Sign out</button></div>
+  </header>
+
+  <main>
+    <section class="auth-panel" id="auth-panel">
+      <div class="auth-copy">
+        <p class="eyebrow">Private client area</p>
+        <h1>Your street artwork library</h1>
+        <p>Sign in with the email address that received your invitation.</p>
+      </div>
+      <form id="login-form" class="login-form">
+        <label>Email address<input id="email" name="email" type="email" autocomplete="email" required></label>
+        <label>Password<input id="password" name="password" type="password" autocomplete="current-password" required></label>
+        <p class="form-message" id="login-message" role="status"></p>
+        <button class="primary-button" type="submit">Sign in</button>
+      </form>
+    </section>
+
+    <section class="library" id="library" hidden>
+      <div class="library-heading">
+        <div><p class="eyebrow">Stoke Newington collection</p><h1>Choose your street faces</h1><p class="lede">Search, preview and collect the print-ready files you need.</p></div>
+        <div class="collection-summary"><strong id="total-count">—</strong><span>available artworks</span></div>
+      </div>
+
+      <div class="toolbar">
+        <label class="search-field"><span class="sr-only">Search streets</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m21 21-4.35-4.35m2.35-5.65a8 8 0 1 1-16 0 8 8 0 0 1 16 0Z"/></svg><input id="search" type="search" placeholder="Search by street name…" autocomplete="off"></label>
+        <label class="select-field">Starts with<select id="letter-filter"><option value="">All letters</option></select></label>
+        <label class="select-field">Sort<select id="sort-order"><option value="az">A–Z</option><option value="za">Z–A</option></select></label>
+      </div>
+
+      <div class="results-bar"><p id="result-count">Loading your library…</p><button class="text-button" id="select-visible" type="button">Select visible</button></div>
+      <div class="notice" id="library-message" role="status" hidden></div>
+      <div class="artwork-grid" id="artwork-grid" aria-live="polite"></div>
+    </section>
+  </main>
+
+  <aside class="selection-tray" id="selection-tray" hidden>
+    <div><strong><span id="selection-count">0</span> selected</strong><span id="selection-size">0 MB</span></div>
+    <button class="text-button light" id="clear-selection" type="button">Clear</button>
+    <button class="primary-button pale" id="download-zip" type="button">Download ZIP</button>
+  </aside>
+
+  <dialog class="preview-dialog" id="preview-dialog">
+    <div class="dialog-header"><div><p class="eyebrow">Artwork preview</p><h2 id="preview-title"></h2></div><button class="icon-button" id="close-preview" type="button" aria-label="Close preview">×</button></div>
+    <div class="preview-stage" id="preview-stage"></div>
+    <div class="dialog-actions"><button class="secondary-button" id="preview-select" type="button">Add to selection</button><button class="primary-button" id="preview-download" type="button">Download PDF</button></div>
+  </dialog>
+
+  <script src="/library/app.bundle.js" defer></script>
+</body>
+</html>

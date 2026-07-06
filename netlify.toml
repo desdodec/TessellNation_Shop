@@ -1,0 +1,25 @@
+[build]
+  command = "npm run build"
+  publish = "."
+  functions = "netlify/functions"
+
+[dev]
+  command = "npx serve ."
+  targetPort = 3000
+  port = 8888
+  publish = "."
+  autoLaunch = false
+
+[[headers]]
+  for = "/library/*"
+  [headers.values]
+    X-Frame-Options = "SAMEORIGIN"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "same-origin"
+    Cache-Control = "no-store"
+
+[[headers]]
+  for = "/.netlify/functions/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    Cache-Control = "private, no-store"

@@ -1,0 +1,9 @@
+node_modules/
+.netlify/
+library/app.bundle.js
+library/app.bundle.js.map
+netlify/functions/*.zip
+netlify/functions/manifest.json
+.env
+.env.*
+!.env.example
